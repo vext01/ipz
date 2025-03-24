@@ -1,0 +1,15 @@
+#!/bin/sh
+
+set -eu
+
+ipz_install() {
+    check_debs_installed build-essential git meson ninja-build
+
+    tmpd=$(mktemp -d)
+    $IPZ_GIT_CLONE https://github.com/rizinorg/rizin "$tmpd"
+    cd "$tmpd"
+
+    meson --buildtype=release --prefix="${IPZ_INST_DIR}" build
+    ninja -C build
+    ninja -C build install
+}

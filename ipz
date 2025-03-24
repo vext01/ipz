@@ -1,0 +1,63 @@
+#!/bin/sh
+
+set -eu
+
+IPZ_INST_BASE=~/.ipz
+IPZ_PKG_BASE=$(dirname "$0")/pkgs
+
+usage() {
+    echo "todo"
+}
+
+check_debs_installed() {
+    need=""
+	for i in "$@"; do
+        set +e
+        dpkg-query -W -f='${Status}' "$i" 2>/dev/null | \
+            grep -q "install ok installed"
+        status=$?
+        set -e
+        if [ "$status" -eq 0 ]; then
+            echo "dpkg: $i is installed"
+        else
+            echo "dpkg: $i is NOT installed"
+            need="${need}$i "
+        fi
+    done
+    if [ -n "$need" ]; then
+        need=$(echo "$need" | sed 's/[[:space:]]*$//')
+        echo "Run 'apt-get install $need' and re-run"
+        exit 1
+    fi
+}
+
+if [ $# -ne 1 ]; then
+    usage
+    exit 1
+fi
+
+IPZ_PKG=$1
+shift
+
+IPZ_PKG_FILE="$IPZ_PKG_BASE/$IPZ_PKG"
+if [ ! -e  "$IPZ_PKG_FILE" ]; then
+    echo "no such package: $IPZ_PKG"
+    exit 1
+fi
+
+IPZ_INST_DIR="$IPZ_INST_BASE/$IPZ_PKG"
+if [ -e "$IPZ_INST_DIR" ]; then
+    echo "package already installed in ${IPZ_INST_DIR}"
+	exit 1
+fi
+
+# shellcheck disable=SC2034
+IPZ_GIT_CLONE="git clone --depth=1"
+
+# shellcheck source=/dev/null
+. "$IPZ_PKG_FILE"
+
+ipz_install
+
+printf "\n->] Good news everyone! [<-\n\n%s is now installed in %s\n" \
+    "$IPZ_PKG" "$IPZ_INST_DIR"

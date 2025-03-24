@@ -1,0 +1,16 @@
+#!/bin/sh
+
+set -eu
+
+ipz_install() {
+    check_debs_installed git ninja-build gettext cmake unzip curl
+
+    tmpd=$(mktemp -d)
+    $IPZ_GIT_CLONE https://github.com/neovim/neovim "$tmpd"
+    cd "$tmpd"
+
+    make CMAKE_EXTRA_FLAGS="-DCMAKE_INSTALL_PREFIX=${IPZ_INST_DIR}" \
+        CMAKE_BUILD_TYPE=Release
+
+    make install
+}

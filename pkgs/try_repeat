@@ -1,0 +1,11 @@
+#!/bin/sh
+
+set -eu
+
+ipz_install() {
+    check_debs_installed git
+    $IPZ_GIT_CLONE https://github.com/ltratt/try_repeat "$IPZ_INST_DIR"
+    cd "$IPZ_INST_DIR"
+    mkdir bin
+    ln -s "$IPZ_INST_DIR/try_repeat" bin/
+}

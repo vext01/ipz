@@ -1,0 +1,19 @@
+#!/bin/sh
+
+set -eu
+
+ipz_install() {
+    # FIXME: check rust/cargo is available.
+
+    check_debs_installed git
+    $IPZ_GIT_CLONE https://github.com/skim-rs/skim "$IPZ_INST_DIR"
+    cd "$IPZ_INST_DIR"
+
+    cargo build --release
+    # bin dir already exists
+    ln -s "$IPZ_INST_DIR/target/release/sk" bin/
+
+    printf "\nAdd something like this to your shell rc (assuming zsh):\n"
+    echo ". ${IPZ_INST_DIR}/shell/completion.zsh"
+    echo ". ${IPZ_INST_DIR}/shell/key-bindings.zsh"
+}

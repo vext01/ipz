@@ -1,0 +1,26 @@
+#!/bin/sh
+
+set -eu
+
+ipz_install() {
+    check_debs_installed python3 wget
+
+    tmpd=$(mktemp -d)
+    cd "$tmpd"
+
+    # Python in bookworm is too old for shrinkray.
+    wget https://www.python.org/ftp/python/3.13.2/Python-3.13.2.tgz
+    ls
+    tar zxf Python-3.13.2.tgz
+    cd Python-3.13.2
+    ./configure --prefix="$IPZ_INST_DIR/python"
+    make -j "$(nproc)"
+    mkdir -p "$IPZ_INST_DIR/bin"
+    make install
+
+    "$IPZ_INST_DIR/python/bin/python3" -mvenv "$IPZ_INST_DIR/ve"
+    "$IPZ_INST_DIR/ve/bin/pip" install \
+        git+https://github.com/DRMacIver/shrinkray.git
+
+    ln -sf "$IPZ_INST_DIR/ve/bin/shrinkray" "$IPZ_INST_DIR/bin/"
+}

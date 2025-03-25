@@ -1,0 +1,17 @@
+#!/bin/sh
+
+set -eu
+
+ipz_install() {
+    check_debs_installed build-essential wget
+
+    tmpd=$(mktemp -d)
+    cd "$tmpd"
+    wget https://lua.org/ftp/lua-5.4.6.tar.gz
+    tar zxf lua-5.4.6.tar.gz
+    cd lua-5.4.6
+    make -j "$(nproc)"
+
+    mkdir -p "$IPZ_INST_DIR/bin"
+    cp "src/lua" "$IPZ_INST_DIR/bin/"
+}

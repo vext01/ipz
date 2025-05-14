@@ -28,3 +28,6 @@ done
 
  - To uninstall something, just delete `~/.ipz/<pkg>`
  - To upgrade something, uninstall the package and re-run the install.
+ - There are no inter-package dependencies, each package gets its own copy of
+   its deps in it's `~/.ipz` sub-directory. This includes build-time
+   dependencies.
